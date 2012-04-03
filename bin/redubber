@@ -1,0 +1,78 @@
+#!/usr/bin/env node
+var util = require('util');
+var wendell = require('wendell');
+
+var Redubber = require('../redubber');
+var config   = require('../config');
+
+// Create a new Redubber
+var redubber = new Redubber(config.channels, config.servers);
+
+// Redubber CLI interface
+var cli = new wendell.CommandParser({
+    "bin": "redubber"
+});
+
+// Monitor
+cli.command("monitor", {
+    "callback": function(options) {
+        console.log('Monitoring Redis channels: ' + redubber.channels.join(', '));
+        console.log('');
+
+        // Start listening for messages
+        redubber.listen(function(channel, message) {
+            console.log('[%s] :: %s', channel, JSON.stringify(message));
+        });
+    }
+});
+
+// Send
+cli.command('send', {
+    "callback": function(options) {
+        redubber._open();
+
+        // Read data from STDIN
+        process.stdin.resume();
+        process.stdin.setEncoding('utf8');
+
+        var buffer = "";
+        process.stdin.on('data', function (chunk) {
+            buffer += chunk;
+        });
+        process.stdin.on('end', function () {
+            // There is no message backlog so we hope all channels will be up
+            // in 5 seconds
+            var to = 5000;
+
+            // Send message after timeout
+            setTimeout(function() {
+                var msg = buffer;
+                if (false !== options.json) {
+                    msg = JSON.parse(msg);
+                }
+                console.log('Sending message');
+                console.log(msg);
+
+                // Send data with redubber
+                redubber.send(msg);
+                // Close connection
+                redubber.close();
+                // Exit
+                process.exit();
+            }, to);
+        });
+    },
+    "options": { 
+        "json":     { "short": "-j", "default": false },
+        "channel":  { "short": "-c" }
+    }
+});
+
+// our awesome export products
+exports = module.exports = cli;
+
+// Run that shit
+if (process.mainModule.filename === __filename) {
+    // Start parsing
+    cli.parse();
+}

@@ -1,0 +1,8 @@
+{
+    "channels": [
+        "message"
+    ],
+    "servers": [
+        "localhost:6379"
+    ]
+}
