@@ -1,0 +1,25 @@
+{
+    "name":             "redubber",
+    "description":      "Control multiple Redis PubSub servers through redub and redis-pubsub",
+    "version":          "0.0.1",
+    "homepage":         "https://github.com/two-screen/redubber",
+    "author":           "Mattijs Hoitink <mattijs@monkeyandmachine.com> (http://monkeyandmachine.com)",
+    "keywords":         ["redis", "pubsub", "redub"],
+    "repository": {
+        "type":     "git",
+        "url":      "git://github.com/two-screen/redubber.git"
+    },
+    "license":          "MIT",
+    "dependencies":     {
+        "redis-pubsub": "*",
+        "redub":        "*",
+        "underscore":   ">=1.3"
+    },
+    "main":             "./index.js",
+    "bin": {
+        "redubber": "./bin/redubber"
+    },
+    "engines": {
+        "node":     "0.6"
+    }
+}
